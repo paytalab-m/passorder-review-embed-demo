@@ -12,12 +12,10 @@
   .px{ padding:0 18px; }
   h1{ font-size:20px; margin:0 0 4px; }
   .sub{ color:var(--sub); font-size:13px; margin:0 0 14px; }
-  /* HOT 메뉴 chips */
   .chips{ display:flex; gap:8px; overflow-x:auto; padding:0 18px 4px; scrollbar-width:none; }
   .chips::-webkit-scrollbar{ display:none; }
   .chip{ flex:0 0 auto; border:1px solid var(--line); border-radius:22px; padding:9px 16px; font-size:14px; color:#444; background:#fff; }
   .chip.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
-  /* 메뉴 요약 */
   .menu{ display:flex; align-items:center; gap:12px; background:#faf7f5; border-radius:14px; padding:12px; margin:14px 18px 6px; }
   .menu .ic{ width:56px; height:56px; border-radius:12px; background:var(--brandsoft); display:flex; align-items:center; justify-content:center; font-size:26px; }
   .menu .info{ flex:1; }
@@ -25,29 +23,31 @@
   .menu .nm{ font-size:16px; font-weight:800; margin:2px 0; }
   .menu .meta{ color:var(--sub); font-size:12px; }
   .menu .btn{ background:var(--brand); color:#fff; border:0; border-radius:20px; padding:9px 18px; font-weight:700; font-size:14px; }
-  /* 리뷰 헤더 */
   .rvhead{ display:flex; justify-content:space-between; align-items:baseline; margin:18px 18px 10px; }
   .rvhead .t{ font-weight:800; font-size:16px; } .rvhead .more{ color:var(--sub); font-size:13px; }
-  /* 가로 스크롤 카드 */
   .rail{ display:flex; gap:12px; overflow-x:auto; padding:0 18px 4px; scroll-snap-type:x mandatory; scrollbar-width:none; }
   .rail::-webkit-scrollbar{ display:none; }
   .rv{ flex:0 0 160px; scroll-snap-align:start; }
   .thumb{ position:relative; width:160px; height:160px; border-radius:14px; overflow:hidden; background:#cdb8ab; }
-  .tag{ position:absolute; top:8px; left:8px; z-index:3; font-size:11px; font-weight:800; color:#fff; padding:3px 8px; border-radius:8px; }
+  .tag{ position:absolute; top:8px; left:8px; z-index:4; font-size:11px; font-weight:800; color:#fff; padding:3px 8px; border-radius:8px; }
   .tag.po{ background:var(--brand);} .tag.yt{ background:#ff0000;} .tag.blog{ background:#22b14c;}
-  .tag.ig{ background:#c13584;} .tag.tt{ background:#111;} .tag.x{ background:#111;}
-  .rate{ position:absolute; top:8px; right:8px; z-index:3; background:rgba(0,0,0,.6); color:#fff; font-size:11px; font-weight:700; padding:3px 7px; border-radius:8px; }
-  .ph{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:34px; opacity:.85; }
+  .tag.ig{ background:#c13584;} .tag.tt{ background:#111;} .tag.x{ background:#1d9bf0;}
+  .rate{ position:absolute; top:8px; right:8px; z-index:4; background:rgba(0,0,0,.6); color:#fff; font-size:11px; font-weight:700; padding:3px 7px; border-radius:8px; }
+  /* 텍스트가 썸네일이 되는 카드(패스오더·블로그) */
+  .txtthumb{ position:absolute; inset:0; padding:30px 12px 12px; font-size:12.5px; line-height:1.45; overflow:hidden;
+             display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; }
+  .po .txtthumb{ background:#fff5ef; color:#3a3f4a; }
+  .blog .txtthumb{ background:#eef6f0; color:#2f5138; }
   /* 유튜브 쇼츠: 중간만 크롭 + 무음 자동재생 */
-  .short iframe{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-                 width:160px; height:284px; border:0; pointer-events:none; }
-  .play{ position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center; }
-  .play span{ width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,.45);
-              display:flex; align-items:center; justify-content:center; }
+  .short iframe{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:160px; height:284px; border:0; pointer-events:none; }
+  .play{ position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center; }
+  .play span{ width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; }
   .play span::after{ content:""; border-left:14px solid #fff; border-top:9px solid transparent; border-bottom:9px solid transparent; margin-left:3px; }
+  /* SNS 공식 임베드를 썸네일 크기에 맞춰 축소·크롭 */
+  .embclip{ position:absolute; inset:0; overflow:hidden; background:#fff; pointer-events:none; }
+  .embclip .sz{ transform-origin:top left; }
   .cap{ font-size:13px; line-height:1.35; margin:8px 2px 2px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   .date{ color:var(--sub); font-size:12px; margin:2px; }
-  /* 모달(앱 웹뷰 시뮬) */
   .modal{ position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:50; }
   .modal.on{ display:flex; }
   .sheet{ width:min(92vw,380px); background:#000; border-radius:16px; overflow:hidden; position:relative; }
@@ -80,51 +80,59 @@
     <div class="rvhead"><div class="t">이 메뉴 리뷰 42</div><div class="more">더보기 ›</div></div>
 
     <div class="rail">
-      <!-- 1) 패스오더 자체 후기: 사진 + 한줄 -->
-      <div class="rv">
+      <!-- 1) 패스오더: 이미지 없으면 후기 텍스트가 썸네일 -->
+      <div class="rv po">
         <div class="thumb"><span class="tag po">패스오더</span><span class="rate">★5.0</span>
-          <div class="ph">🥤</div></div>
+          <div class="txtthumb">진짜 안 달아서 매일 먹어요. 저당인데 복숭아 맛 제대로 나고 시원해서 여름에 계속 시켜먹는 중! 강추합니다 🍑</div></div>
         <div class="cap">진짜 안 달아서 매일 먹어요 강추</div>
         <div class="date">07.22</div>
       </div>
 
-      <!-- 2) 유튜브 쇼츠: 중간 크롭 + 무음 자동재생, 탭 → 전체 재생 -->
+      <!-- 2) 유튜브 쇼츠: 중간 크롭 + 무음 자동재생, 탭 → 전체 재생 / 아래=제목 -->
       <div class="rv" onclick="openYT('qxmXuVep294')">
         <div class="thumb short">
           <span class="tag yt">유튜브</span>
-          <iframe src="https://www.youtube.com/embed/qxmXuVep294?autoplay=1&mute=1&loop=1&playlist=qxmXuVep294&controls=0&modestbranding=1&playsinline=1"
-                  allow="autoplay"></iframe>
+          <iframe src="https://www.youtube.com/embed/qxmXuVep294?autoplay=1&mute=1&loop=1&playlist=qxmXuVep294&controls=0&modestbranding=1&playsinline=1" allow="autoplay"></iframe>
           <div class="play"><span></span></div>
         </div>
-        <div class="cap">저당인데 이 맛이? 솔직후기</div>
+        <div class="cap">3900원 컴포즈커피 7월 신상 스무디 2종</div>
         <div class="date">07.19</div>
       </div>
 
-      <!-- 3) 블로그: 탭 → 원문(앱=웹뷰) -->
-      <div class="rv" onclick="openURL('https://blog.naver.com/etienne03/224346457970')">
-        <div class="thumb" style="background:#e6efe8"><span class="tag blog">블로그</span>
-          <div class="ph" style="color:#2f6b40;font-size:15px;padding:14px;text-align:center;line-height:1.4">다이어트 최애<br>등극 후기</div></div>
-        <div class="cap">저당 복숭아 스무디 다이어트 최애 등극!</div>
-        <div class="date">07.20</div>
+      <!-- 3) 블로그: 요약이 썸네일 / 아래=제목 -->
+      <div class="rv blog" onclick="openURL('https://blog.naver.com/etienne03/224346457970')">
+        <div class="thumb"><span class="tag blog">블로그</span>
+          <div class="txtthumb">여름 음료 할인 프로모션 후기 — 아빠도 저당 복숭아 스무디 맛보고 칭찬까지 하셨는데요. 가족들과 함께 먹고 온 컴포즈커피 신메뉴…</div></div>
+        <div class="cap">컴포즈커피 저당 복숭아 스무디 7월 신메뉴 추천!</div>
+        <div class="date">07.14</div>
       </div>
 
-      <!-- 4) 인스타: 탭 → 게시물(앱=웹뷰) -->
+      <!-- 4) 인스타: 공식 임베드(이미지+캡션) 축소·크롭 / 아래=캡션 첫 문장 -->
       <div class="rv" onclick="openURL('https://www.instagram.com/p/Dapp_KJhDiG/')">
-        <div class="thumb" style="background:#d9b8cd"><span class="tag ig">인스타</span><div class="ph">📷</div></div>
-        <div class="cap">14.5칼로리인데 맛있는 복숭아스무디 등장🍑</div>
+        <div class="thumb"><span class="tag ig">인스타</span>
+          <div class="embclip"><div class="sz" style="width:326px;transform:scale(0.491)">
+            <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dapp_KJhDiG/" data-instgrm-version="14" style="margin:0;min-width:326px;"></blockquote>
+          </div></div></div>
+        <div class="cap">정확히 14.5칼로리인데 맛있는 복숭아스무디 컴포즈커피에 등장🍑</div>
         <div class="date">07.13</div>
       </div>
 
-      <!-- 5) 틱톡: 탭 → 영상(앱=웹뷰) -->
+      <!-- 5) 틱톡: 공식 임베드(영상) 축소·크롭 / 아래=캡션 첫 문장 -->
       <div class="rv" onclick="openURL('https://www.tiktok.com/@muk.betting/video/7659691075509947669')">
-        <div class="thumb" style="background:#b8c6cd"><span class="tag tt">틱톡</span><div class="ph">🎵</div></div>
+        <div class="thumb"><span class="tag tt">틱톡</span>
+          <div class="embclip"><div class="sz" style="width:325px;transform:scale(0.492)">
+            <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@muk.betting/video/7659691075509947669" data-video-id="7659691075509947669" style="margin:0;min-width:325px;"><section></section></blockquote>
+          </div></div></div>
         <div class="cap">컴포즈 7월 신상 스무디 2종 후기</div>
         <div class="date">07.07</div>
       </div>
 
-      <!-- 6) X: 탭 → 트윗(앱=웹뷰) -->
+      <!-- 6) X: 공식 임베드(트윗) 축소·크롭 / 아래=본문 첫 문장 -->
       <div class="rv" onclick="openURL('https://x.com/aetklimr/status/2078018063765807173')">
-        <div class="thumb" style="background:#c2c7cc"><span class="tag x">X</span><div class="ph">𝕏</div></div>
+        <div class="thumb"><span class="tag x">X</span>
+          <div class="embclip"><div class="sz" style="width:300px;transform:scale(0.533)">
+            <blockquote class="twitter-tweet" data-dnt="true" style="margin:0;"><a href="https://x.com/aetklimr/status/2078018063765807173"></a></blockquote>
+          </div></div></div>
         <div class="cap">컴포즈 저당 복숭아 스무디</div>
         <div class="date">07.17</div>
       </div>
@@ -132,7 +140,6 @@
   </div>
 </div>
 
-<!-- 앱 내 웹뷰 시뮬 모달 (유튜브 전체 재생) -->
 <div class="modal" id="modal" onclick="closeM(event)">
   <div class="sheet">
     <button class="close" onclick="closeM(event,true)">×</button>
@@ -146,7 +153,7 @@
       '<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
     document.getElementById('modal').classList.add('on');
   }
-  function openURL(u){ window.open(u,'_blank'); }  // 앱에선 네이티브 WebView로 열림
+  function openURL(u){ window.open(u,'_blank'); }
   function closeM(e, force){
     if(force || e.target.id==='modal'){
       document.getElementById('modal').classList.remove('on');
@@ -154,3 +161,6 @@
     }
   }
 </script>
+<script async src="https://www.instagram.com/embed.js"></script>
+<script async src="https://www.tiktok.com/embed.js"></script>
+<script async src="https://platform.twitter.com/widgets.js"></script>
