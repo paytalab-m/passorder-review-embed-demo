@@ -25,9 +25,11 @@
   .menu .btn{ background:var(--brand); color:#fff; border:0; border-radius:20px; padding:9px 18px; font-weight:700; font-size:14px; }
   .rvhead{ display:flex; justify-content:space-between; align-items:baseline; margin:18px 18px 10px; }
   .rvhead .t{ font-weight:800; font-size:16px; } .rvhead .more{ color:var(--sub); font-size:13px; }
-  .rail{ display:flex; gap:12px; overflow-x:auto; padding:0 18px 4px; scroll-snap-type:x mandatory; scrollbar-width:none; }
+  .rail{ display:flex; gap:12px; overflow-x:auto; padding:0 0 4px; scroll-snap-type:x mandatory; scroll-padding-left:18px; scrollbar-width:none; }
   .rail::-webkit-scrollbar{ display:none; }
   .rv{ flex:0 0 160px; scroll-snap-align:start; }
+  .rv:first-child{ margin-left:18px; }
+  .rv:last-child{ margin-right:18px; }
   .thumb{ position:relative; width:160px; height:160px; border-radius:14px; overflow:hidden; background:#cdb8ab; }
   .tag{ position:absolute; top:8px; left:8px; z-index:4; font-size:11px; font-weight:800; color:#fff; padding:3px 8px; border-radius:8px; }
   .tag.po{ background:var(--brand);} .tag.yt{ background:#ff0000;} .tag.blog{ background:#22b14c;}
