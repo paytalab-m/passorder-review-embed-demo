@@ -1,156 +1,98 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>패스오더 · 메뉴 리뷰 임베드 (앱 UI 데모)</title>
+<title>패스오더 · 메뉴 리뷰 (시각/텍스트 분리 데모)</title>
 <style>
-  :root{ --bg:#f2f3f5; --card:#fff; --line:#eceef1; --txt:#1f2430; --sub:#8b8f98;
-         --brand:#e8622c; --brandsoft:#fbe7dd; }
+  :root{ --bg:#f2f3f5; --card:#fff; --line:#eceef1; --txt:#1f2430; --sub:#8b8f98; --brand:#e8622c; --brandsoft:#fbe7dd; }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body{ margin:0; background:var(--bg); color:var(--txt);
-        font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
+  body{ margin:0; background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; }
   .phone{ max-width:420px; margin:0 auto; padding:14px; }
-  .panel{ background:var(--card); border-radius:20px; padding:18px 0 16px; box-shadow:0 2px 12px rgba(0,0,0,.05); }
-  .px{ padding:0 18px; }
-  h1{ font-size:20px; margin:0 0 4px; }
-  .sub{ color:var(--sub); font-size:13px; margin:0 0 14px; }
-  .chips{ display:flex; gap:8px; overflow-x:auto; padding:0 18px 4px; scrollbar-width:none; }
-  .chips::-webkit-scrollbar{ display:none; }
+  .panel{ background:var(--card); border-radius:20px; padding:18px 0 18px; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+  .px{ padding:0 18px; } h1{ font-size:20px; margin:0 0 4px; } .sub{ color:var(--sub); font-size:13px; margin:0 0 14px; }
+  .chips{ display:flex; gap:8px; overflow-x:auto; padding:0 18px 4px; scrollbar-width:none; } .chips::-webkit-scrollbar{ display:none; }
   .chip{ flex:0 0 auto; border:1px solid var(--line); border-radius:22px; padding:9px 16px; font-size:14px; color:#444; background:#fff; }
   .chip.on{ background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; }
   .menu{ display:flex; align-items:center; gap:12px; background:#faf7f5; border-radius:14px; padding:12px; margin:14px 18px 6px; }
   .menu .ic{ width:56px; height:56px; border-radius:12px; background:var(--brandsoft); display:flex; align-items:center; justify-content:center; font-size:26px; }
-  .menu .info{ flex:1; }
-  .menu .fr{ color:var(--brand); font-size:12px; font-weight:700; }
-  .menu .nm{ font-size:16px; font-weight:800; margin:2px 0; }
-  .menu .meta{ color:var(--sub); font-size:12px; }
+  .menu .info{ flex:1; } .menu .fr{ color:var(--brand); font-size:12px; font-weight:700; } .menu .nm{ font-size:16px; font-weight:800; margin:2px 0; } .menu .meta{ color:var(--sub); font-size:12px; }
   .menu .btn{ background:var(--brand); color:#fff; border:0; border-radius:20px; padding:9px 18px; font-weight:700; font-size:14px; }
   .rvhead{ display:flex; justify-content:space-between; align-items:baseline; margin:18px 18px 10px; }
-  .rvhead .t{ font-weight:800; font-size:16px; } .rvhead .more{ color:var(--sub); font-size:13px; }
-  .rail{ display:flex; gap:12px; overflow-x:auto; padding:0 0 4px; scroll-snap-type:x mandatory; scroll-padding-left:18px; scrollbar-width:none; }
-  .rail::-webkit-scrollbar{ display:none; }
-  .rv{ flex:0 0 160px; scroll-snap-align:start; }
-  .rv:first-child{ margin-left:18px; }
-  .rv:last-child{ margin-right:18px; }
+  .rvhead .t{ font-weight:800; font-size:15px; } .rvhead .t small{ color:var(--sub); font-weight:600; font-size:12px; margin-left:4px; } .rvhead .more{ color:var(--sub); font-size:13px; }
+  /* 시각 영역: 정사각 가로 스크롤 */
+  .rail{ display:flex; gap:12px; overflow-x:auto; padding:0 0 4px; scroll-snap-type:x mandatory; scroll-padding-left:18px; scrollbar-width:none; } .rail::-webkit-scrollbar{ display:none; }
+  .rv{ flex:0 0 160px; scroll-snap-align:start; } .rv:first-child{ margin-left:18px; } .rv:last-child{ margin-right:18px; }
   .thumb{ position:relative; width:160px; height:160px; border-radius:14px; overflow:hidden; background:#cdb8ab; }
   .tag{ position:absolute; top:8px; left:8px; z-index:4; font-size:11px; font-weight:800; color:#fff; padding:3px 8px; border-radius:8px; }
-  .tag.po{ background:var(--brand);} .tag.yt{ background:#ff0000;} .tag.blog{ background:#22b14c;}
-  .tag.ig{ background:#c13584;} .tag.tt{ background:#111;} .tag.x{ background:#1d9bf0;}
-  .rate{ position:absolute; top:8px; right:8px; z-index:4; background:rgba(0,0,0,.6); color:#fff; font-size:11px; font-weight:700; padding:3px 7px; border-radius:8px; }
-  /* 텍스트가 썸네일이 되는 카드(패스오더·블로그) */
-  .txtthumb{ position:absolute; inset:0; padding:30px 12px 12px; font-size:12.5px; line-height:1.45; overflow:hidden;
-             display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; }
-  .po .txtthumb{ background:#fff5ef; color:#3a3f4a; }
-  .blog .txtthumb{ background:#eef6f0; color:#2f5138; }
-  /* 유튜브 쇼츠: 중간만 크롭 + 무음 자동재생 */
+  .tag.yt{ background:#ff0000;} .tag.ig{ background:#c13584;} .tag.tt{ background:#111;} .tag.po{ background:var(--brand);} .tag.blog{ background:#22b14c;} .tag.x{ background:#1d9bf0;}
+  .embclip{ position:absolute; inset:0; overflow:hidden; background:#fff; pointer-events:none; } .embclip .sz{ transform-origin:top left; }
   .short iframe{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:160px; height:284px; border:0; pointer-events:none; }
   .play{ position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center; }
   .play span{ width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; }
   .play span::after{ content:""; border-left:14px solid #fff; border-top:9px solid transparent; border-bottom:9px solid transparent; margin-left:3px; }
-  /* SNS 공식 임베드를 썸네일 크기에 맞춰 축소·크롭 */
-  .embclip{ position:absolute; inset:0; overflow:hidden; background:#fff; pointer-events:none; }
-  .embclip .sz{ transform-origin:top left; }
   .cap{ font-size:13px; line-height:1.35; margin:8px 2px 2px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  .date{ color:var(--sub); font-size:12px; margin:2px; }
-  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:50; }
-  .modal.on{ display:flex; }
+  /* 텍스트 영역: 가로로 긴 카드 + 5초 롤링 */
+  .textcard{ margin:0 18px; border:1px solid var(--line); border-radius:14px; padding:14px 16px; min-height:78px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .textcard .body{ flex:1; transition:opacity .4s; }
+  .textcard .tg{ display:inline-block; font-size:11px; font-weight:800; color:#fff; padding:2px 8px; border-radius:7px; margin-bottom:6px; }
+  .textcard .line{ font-size:14px; line-height:1.4; color:#2c313a; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .dots{ display:flex; gap:5px; justify-content:center; margin-top:10px; }
+  .dots i{ width:6px; height:6px; border-radius:50%; background:var(--line); } .dots i.on{ background:var(--brand); }
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; z-index:50; } .modal.on{ display:flex; }
   .sheet{ width:min(92vw,380px); background:#000; border-radius:16px; overflow:hidden; position:relative; }
   .sheet .close{ position:absolute; top:8px; right:10px; z-index:5; color:#fff; font-size:22px; background:rgba(0,0,0,.4); border:0; border-radius:50%; width:32px; height:32px; }
-  .sheet .player{ position:relative; width:100%; height:72vh; background:#fff; }
-  .sheet iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .sheet .player{ position:relative; width:100%; height:72vh; background:#fff; } .sheet iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
 </style>
 
 <div class="phone">
   <div class="panel">
-    <div class="px"><h1>요즘 뜨는 HOT 메뉴</h1>
-      <p class="sub">내 근처에서 지금 주문 급상승 중인 신메뉴</p></div>
-
+    <div class="px"><h1>요즘 뜨는 HOT 메뉴</h1><p class="sub">내 근처에서 지금 주문 급상승 중인 신메뉴</p></div>
     <div class="chips">
-      <div class="chip on">저당 복숭아 스무디</div>
-      <div class="chip">제주 한라봉 스무디</div>
-      <div class="chip">옛날 컵빙수</div>
+      <div class="chip on">저당 복숭아 스무디</div><div class="chip">제주 한라봉 스무디</div><div class="chip">옛날 컵빙수</div>
     </div>
-
     <div class="menu">
       <div class="ic">🥤</div>
-      <div class="info">
-        <div class="fr">컴포즈커피 · 출시 3주차</div>
-        <div class="nm">저당 복숭아 스무디</div>
-        <div class="meta">🔥 급상승 · 3,900원 · 233m</div>
-      </div>
+      <div class="info"><div class="fr">컴포즈커피 · 출시 3주차</div><div class="nm">저당 복숭아 스무디</div><div class="meta">🔥 급상승 · 3,900원 · 233m</div></div>
       <button class="btn">담기</button>
     </div>
 
-    <div class="rvhead"><div class="t">이 메뉴 리뷰 42</div><div class="more">더보기 ›</div></div>
-
+    <!-- 상단: 영상·이미지 리뷰 (정사각 가로 스크롤) -->
+    <div class="rvhead"><div class="t">영상·이미지 리뷰 <small>유튜브·인스타·틱톡</small></div><div class="more">더보기 ›</div></div>
     <div class="rail">
-      <!-- 1) 패스오더: 이미지 없으면 후기 텍스트가 썸네일 -->
-      <div class="rv po">
-        <div class="thumb"><span class="tag po">패스오더</span><span class="rate">★5.0</span>
-          <div class="txtthumb">진짜 안 달아서 매일 먹어요. 저당인데 복숭아 맛 제대로 나고 시원해서 여름에 계속 시켜먹는 중! 강추합니다 🍑</div></div>
-        <div class="cap">진짜 안 달아서 매일 먹어요 강추</div>
-        <div class="date">07.22</div>
-      </div>
-
-      <!-- 2) 유튜브 쇼츠: 중간 크롭 + 무음 자동재생, 탭 → 전체 재생 / 아래=제목 -->
       <div class="rv" onclick="openEmbed('yt','qxmXuVep294')">
-        <div class="thumb short">
-          <span class="tag yt">유튜브</span>
+        <div class="thumb short"><span class="tag yt">유튜브</span>
           <iframe src="https://www.youtube.com/embed/qxmXuVep294?autoplay=1&mute=1&loop=1&playlist=qxmXuVep294&controls=0&modestbranding=1&playsinline=1" allow="autoplay"></iframe>
-          <div class="play"><span></span></div>
-        </div>
+          <div class="play"><span></span></div></div>
         <div class="cap">3900원 컴포즈커피 7월 신상 스무디 2종</div>
-        <div class="date">07.19</div>
       </div>
-
-      <!-- 3) 블로그: 요약이 썸네일 / 아래=제목 -->
-      <div class="rv blog" onclick="openURL('https://blog.naver.com/etienne03/224346457970')">
-        <div class="thumb"><span class="tag blog">블로그</span>
-          <div class="txtthumb">여름 음료 할인 프로모션 후기 — 아빠도 저당 복숭아 스무디 맛보고 칭찬까지 하셨는데요. 가족들과 함께 먹고 온 컴포즈커피 신메뉴…</div></div>
-        <div class="cap">컴포즈커피 저당 복숭아 스무디 7월 신메뉴 추천!</div>
-        <div class="date">07.14</div>
-      </div>
-
-      <!-- 4) 인스타: 공식 임베드(이미지+캡션) 축소·크롭 / 아래=캡션 첫 문장 -->
       <div class="rv" onclick="openEmbed('ig','Dapp_KJhDiG')">
         <div class="thumb"><span class="tag ig">인스타</span>
           <div class="embclip"><div class="sz" style="width:326px;transform:scale(0.491)">
             <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dapp_KJhDiG/" data-instgrm-version="14" style="margin:0;min-width:326px;"></blockquote>
           </div></div></div>
-        <div class="cap">정확히 14.5칼로리인데 맛있는 복숭아스무디 컴포즈커피에 등장🍑</div>
-        <div class="date">07.13</div>
+        <div class="cap">14.5칼로리인데 맛있는 복숭아스무디 등장🍑</div>
       </div>
-
-      <!-- 5) 틱톡: 공식 임베드(영상) 축소·크롭 / 아래=캡션 첫 문장 -->
       <div class="rv" onclick="openEmbed('tt','7659691075509947669')">
         <div class="thumb"><span class="tag tt">틱톡</span>
           <div class="embclip"><div class="sz" style="width:325px;transform:scale(0.492)">
             <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@muk.betting/video/7659691075509947669" data-video-id="7659691075509947669" style="margin:0;min-width:325px;"><section></section></blockquote>
           </div></div></div>
         <div class="cap">컴포즈 7월 신상 스무디 2종 후기</div>
-        <div class="date">07.07</div>
-      </div>
-
-      <!-- 6) X: 공식 임베드(트윗) 축소·크롭 / 아래=본문 첫 문장 -->
-      <div class="rv" onclick="openEmbed('x','2078018063765807173')">
-        <div class="thumb"><span class="tag x">X</span>
-          <div class="embclip"><div class="sz" style="width:300px;transform:scale(0.533)">
-            <blockquote class="twitter-tweet" data-dnt="true" style="margin:0;"><a href="https://x.com/aetklimr/status/2078018063765807173"></a></blockquote>
-          </div></div></div>
-        <div class="cap">컴포즈 저당 복숭아 스무디</div>
-        <div class="date">07.17</div>
       </div>
     </div>
+
+    <!-- 하단: 텍스트 리뷰 (가로로 긴 카드, 5초 롤링) -->
+    <div class="rvhead"><div class="t">텍스트 리뷰 <small>블로그·X·패스오더</small></div><div class="more">더보기 ›</div></div>
+    <div class="textcard" id="tcard" onclick="tclick()">
+      <div class="body" id="tbody"></div>
+    </div>
+    <div class="dots" id="tdots"></div>
   </div>
 </div>
 
 <div class="modal" id="modal" onclick="closeM(event)">
-  <div class="sheet">
-    <button class="close" onclick="closeM(event,true)">×</button>
-    <div class="player" id="player"></div>
-  </div>
+  <div class="sheet"><button class="close" onclick="closeM(event,true)">×</button><div class="player" id="player"></div></div>
 </div>
 
 <script>
-  // 각 플랫폼의 iframe 임베드 URL → 유튜브처럼 모달(인앱 웹뷰 시뮬)로 띄움
   const SRC = {
     yt: id => 'https://www.youtube.com/embed/' + id + '?autoplay=1&playsinline=1',
     tt: id => 'https://www.tiktok.com/embed/v2/' + id,
@@ -158,18 +100,34 @@
     x:  id => 'https://platform.twitter.com/embed/Tweet.html?id=' + id
   };
   function openEmbed(kind, id){
-    document.getElementById('player').innerHTML =
-      '<iframe src="' + SRC[kind](id) + '" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    document.getElementById('player').innerHTML = '<iframe src="'+SRC[kind](id)+'" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
     document.getElementById('modal').classList.add('on');
   }
-  function openURL(u){ window.open(u,'_blank'); }  // 네이버 블로그는 iframe 불가 → 원문 이동(앱=네이티브 WebView)
-  function closeM(e, force){
-    if(force || e.target.id==='modal'){
-      document.getElementById('modal').classList.remove('on');
-      document.getElementById('player').innerHTML='';
-    }
+  function openURL(u){ window.open(u,'_blank'); }
+  function closeM(e, force){ if(force||e.target.id==='modal'){ document.getElementById('modal').classList.remove('on'); document.getElementById('player').innerHTML=''; } }
+
+  // 텍스트 리뷰 롤링 (5초 간격)
+  const TEXT = [
+    { tg:'블로그', cls:'blog', line:'컴포즈커피 저당 복숭아 스무디 7월 신메뉴 추천! 아빠도 맛보고 칭찬하셨어요', act:()=>openURL('https://blog.naver.com/etienne03/224346457970') },
+    { tg:'X', cls:'x', line:'와 컴포즈 저당 복숭아 스무디 맛도리.. 쿨피스 얼려먹던 그 맛 🧡', act:()=>openEmbed('x','2078018063765807173') },
+    { tg:'패스오더', cls:'po', line:'진짜 안 달아서 매일 먹어요. 저당인데 복숭아 맛 제대로 나고 시원해서 강추!', act:()=>{} }
+  ];
+  let ti = 0;
+  function renderText(){
+    const it = TEXT[ti], b = document.getElementById('tbody');
+    b.style.opacity = 0;
+    setTimeout(()=>{
+      b.innerHTML = '<span class="tg tag '+it.cls+'" style="position:static">'+it.tg+'</span><div class="line">'+it.line+'</div>';
+      b.style.opacity = 1;
+      document.querySelectorAll('#tdots i').forEach((d,i)=>d.classList.toggle('on', i===ti));
+    }, 200);
   }
+  function tclick(){ TEXT[ti].act(); }
+  (function initText(){
+    document.getElementById('tdots').innerHTML = TEXT.map(()=> '<i></i>').join('');
+    renderText();
+    setInterval(()=>{ ti = (ti+1) % TEXT.length; renderText(); }, 5000);
+  })();
 </script>
 <script async src="https://www.instagram.com/embed.js"></script>
 <script async src="https://www.tiktok.com/embed.js"></script>
-<script async src="https://platform.twitter.com/widgets.js"></script>
