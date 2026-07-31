@@ -54,7 +54,7 @@
   .modal.on{ display:flex; }
   .sheet{ width:min(92vw,380px); background:#000; border-radius:16px; overflow:hidden; position:relative; }
   .sheet .close{ position:absolute; top:8px; right:10px; z-index:5; color:#fff; font-size:22px; background:rgba(0,0,0,.4); border:0; border-radius:50%; width:32px; height:32px; }
-  .sheet .player{ position:relative; width:100%; aspect-ratio:9/16; }
+  .sheet .player{ position:relative; width:100%; height:72vh; background:#fff; }
   .sheet iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
 </style>
 
@@ -91,7 +91,7 @@
       </div>
 
       <!-- 2) 유튜브 쇼츠: 중간 크롭 + 무음 자동재생, 탭 → 전체 재생 / 아래=제목 -->
-      <div class="rv" onclick="openYT('qxmXuVep294')">
+      <div class="rv" onclick="openEmbed('yt','qxmXuVep294')">
         <div class="thumb short">
           <span class="tag yt">유튜브</span>
           <iframe src="https://www.youtube.com/embed/qxmXuVep294?autoplay=1&mute=1&loop=1&playlist=qxmXuVep294&controls=0&modestbranding=1&playsinline=1" allow="autoplay"></iframe>
@@ -110,7 +110,7 @@
       </div>
 
       <!-- 4) 인스타: 공식 임베드(이미지+캡션) 축소·크롭 / 아래=캡션 첫 문장 -->
-      <div class="rv" onclick="openURL('https://www.instagram.com/p/Dapp_KJhDiG/')">
+      <div class="rv" onclick="openEmbed('ig','Dapp_KJhDiG')">
         <div class="thumb"><span class="tag ig">인스타</span>
           <div class="embclip"><div class="sz" style="width:326px;transform:scale(0.491)">
             <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/Dapp_KJhDiG/" data-instgrm-version="14" style="margin:0;min-width:326px;"></blockquote>
@@ -120,7 +120,7 @@
       </div>
 
       <!-- 5) 틱톡: 공식 임베드(영상) 축소·크롭 / 아래=캡션 첫 문장 -->
-      <div class="rv" onclick="openURL('https://www.tiktok.com/@muk.betting/video/7659691075509947669')">
+      <div class="rv" onclick="openEmbed('tt','7659691075509947669')">
         <div class="thumb"><span class="tag tt">틱톡</span>
           <div class="embclip"><div class="sz" style="width:325px;transform:scale(0.492)">
             <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@muk.betting/video/7659691075509947669" data-video-id="7659691075509947669" style="margin:0;min-width:325px;"><section></section></blockquote>
@@ -130,7 +130,7 @@
       </div>
 
       <!-- 6) X: 공식 임베드(트윗) 축소·크롭 / 아래=본문 첫 문장 -->
-      <div class="rv" onclick="openURL('https://x.com/aetklimr/status/2078018063765807173')">
+      <div class="rv" onclick="openEmbed('x','2078018063765807173')">
         <div class="thumb"><span class="tag x">X</span>
           <div class="embclip"><div class="sz" style="width:300px;transform:scale(0.533)">
             <blockquote class="twitter-tweet" data-dnt="true" style="margin:0;"><a href="https://x.com/aetklimr/status/2078018063765807173"></a></blockquote>
@@ -150,12 +150,19 @@
 </div>
 
 <script>
-  function openYT(id){
+  // 각 플랫폼의 iframe 임베드 URL → 유튜브처럼 모달(인앱 웹뷰 시뮬)로 띄움
+  const SRC = {
+    yt: id => 'https://www.youtube.com/embed/' + id + '?autoplay=1&playsinline=1',
+    tt: id => 'https://www.tiktok.com/embed/v2/' + id,
+    ig: id => 'https://www.instagram.com/p/' + id + '/embed/',
+    x:  id => 'https://platform.twitter.com/embed/Tweet.html?id=' + id
+  };
+  function openEmbed(kind, id){
     document.getElementById('player').innerHTML =
-      '<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+      '<iframe src="' + SRC[kind](id) + '" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
     document.getElementById('modal').classList.add('on');
   }
-  function openURL(u){ window.open(u,'_blank'); }
+  function openURL(u){ window.open(u,'_blank'); }  // 네이버 블로그는 iframe 불가 → 원문 이동(앱=네이티브 WebView)
   function closeM(e, force){
     if(force || e.target.id==='modal'){
       document.getElementById('modal').classList.remove('on');
